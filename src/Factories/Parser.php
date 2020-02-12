@@ -41,7 +41,7 @@ class Parser
 
         $this->version = $version;
 
-        // $this->make = new Make();
+        $this->make = new Make();
     }
 
     public function toXml($nota)
@@ -49,11 +49,13 @@ class Parser
 
         $std = $this->array2xml($nota);
 
-        $this->fixFields();
-        var_dump($this->std);
-        if ($this->make->getXML($this->std)) {
+        // $this->fixFields();
 
-            return $this->make->getXML($this->std);
+        $hash = $this->createSignature();
+
+        if ($this->make->getXML($this->std, $hash)) {
+
+            return $this->make->getXML($this->std, $hash);
         }
 
         return null;
@@ -119,51 +121,70 @@ class Parser
         return $this->std;
     }
 
-    protected function fixFields()
+    protected function createSignature()
     {
+        $inscrMunicipal = str_pad($this->std->prestador->InscricaoMunicipal, 11, "0", STR_PAD_LEFT);
+        $serie = str_pad($this->std->Serie, 5, " ");
+        $rpsNum = str_pad($this->std->RPSNum, 12, "0", STR_PAD_LEFT);
+        $dtEmi = $this->std->DataEmissao;
+        $tributacao = str_pad($this->std->Tributacao, 2, " ");
+        $situacaoRPS = $this->std->SituacaoRPS;
+        $tipoRec = $this->std->TipoRecolhimento;
+        $resultado = str_pad($this->std->ValorServicos - $this->std->Deducao, 15, "0", STR_PAD_LEFT);
+        $deducao = str_pad($this->std->Deducao, 15, "0", STR_PAD_LEFT);
+        $codigoCnae = str_pad($this->std->CodigoCnae, 10, "0", STR_PAD_LEFT);
+        $cnpj = str_pad($this->std->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
 
-        $impostos = ['Pis', 'Cofins', 'Inss', 'Ir', 'Csll', 'Icms', 'Ipi', 'Iof', 'Cide', 'OutrosTributos', 'OutrasRetencoes'];
-
-        $aux = explode('T', $this->std->DataEmissao);
-
-        $aux[0] = trim(Uteis::convertDateMysqltoBR($aux[0]));
-
-        $this->std->DataEmissao = $aux[0];
-
-        $this->std->HoraEmissao = $aux[1];
-
-        if ($this->std->IssRetido == '1') {
-
-            $this->std->IssRetido = 'S';
-        } else {
-
-            $this->std->IssRetido = 'N';
-
-            $this->std->ValorIssRetido = '0.00';
-        }
-
-        foreach ($impostos as $value) {
-
-            $this->std->{'Ret' . $value} = $this->retImpostos($this->std->{'Valor' . $value});
-
-            if ($this->std->{'Ret' . $value} == 'N') {
-
-                $this->std->{'Valor' . $value} = '0.00';
-            }
-        }
-
-        $this->std->RPSNum = '0000-00' . substr($this->std->RPSNum, 0, 2) . '-' . substr($this->std->RPSNum, -4);
+        $assinatura = $inscrMunicipal . $serie . $rpsNum . $dtEmi . $tributacao . $situacaoRPS . $tipoRec . $resultado . $deducao . $codigoCnae . $cnpj;
+        
+        $hash = sha1($assinatura);
+        
+        return $hash;
     }
 
-    protected function retImpostos($imposto)
-    {
+    // protected function fixFields()
+    // {
 
-        if ($imposto) {
+    //     $impostos = ['Pis', 'Cofins', 'Inss', 'Ir', 'Csll', 'Icms', 'Ipi', 'Iof', 'Cide', 'OutrosTributos', 'OutrasRetencoes'];
 
-            return $ret = 'S';
-        } else {
+    //     $aux = explode('T', $this->std->DataEmissao);
 
-            return $ret = 'N';
-        }
-    }
+    //     $this->std->DataEmissao = $aux[0];
+
+    //     $this->std->HoraEmissao = $aux[1];
+
+    //     if ($this->std->IssRetido == '1') {
+
+    //         $this->std->IssRetido = 'S';
+    //     } else {
+
+    //         $this->std->IssRetido = 'N';
+
+    //         $this->std->ValorIssRetido = '0.00';
+    //     }
+
+    //     foreach ($impostos as $value) {
+
+    //         $this->std->{'Ret' . $value} = $this->retImpostos($this->std->{'Valor' . $value});
+
+    //         if ($this->std->{'Ret' . $value} == 'N') {
+
+    //             $this->std->{'Valor' . $value} = '0.00';
+    //         }
+    //     }
+
+    //     $this->std->RPSNum = '0000-00' . substr($this->std->RPSNum, 0, 2) . '-' . substr($this->std->RPSNum, -4);
+    // }
+
+    // protected function retImpostos($imposto)
+    // {
+
+    //     if ($imposto) {
+
+    //         return $ret = 'S';
+    //     } else {
+
+    //         return $ret = 'N';
+    //     }
+    // }
 }

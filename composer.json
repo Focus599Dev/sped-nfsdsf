@@ -35,12 +35,12 @@
     },
     "autoload": {
         "psr-4": {
-            "NFePHP\\NFSe\\dsf\\": "src/"
+            "NFePHP\\NFSe\\DSF\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "NFePHP\\NFSe\\dsf\\Tests\\": "tests/"
+            "NFePHP\\NFSe\\DSF\\Tests\\": "tests/"
         }
     },
     "scripts": {

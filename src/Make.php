@@ -21,27 +21,32 @@ class Make
         $this->dom->formatOutput = false;
     }
 
-    public function getXML($std)
+    public function getXML($std, $hash)
     {
 
         if (empty($this->xml)) {
 
-            $this->gerarNota($std);
+            $this->gerarNota($std, $hash);
         }
 
         return $this->xml;
     }
 
-    public function gerarNota($std)
+    public function gerarNota($std, $hash)
     {
+        $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
+        $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
+        $req->setAttribute('xmlns:tipos', 'http://localhost:8080/WsNFe2/tp');
+        $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $this->dom->appendChild($req);
 
         $cabecalho = $this->dom->createElement('Cabecalho');
-        $this->dom->appendChild($cabecalho);
+        $req->appendChild($cabecalho);
 
         $this->dom->addChild(
-            $cabecalho,                                     // pai    
+            $cabecalho,                                     // pai
             "CodCidade",                                    // nome
-            $std,                                           // valor
+            '7145',                                         // valor
             true,                                           // se é obrigatorio
             "Código da cidade da declaração padrão SIAFI."  // descrição se der catch
         );
@@ -49,7 +54,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CPFCNPJRemetente",
-            $std,
+            $std->prestador->Cnpj,
             true,
             "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
@@ -57,7 +62,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "RazaoSocialRemetente",
-            $std,
+            $std->prestador->RazaoSocial,
             true,
             "Razão Social do Remetente"
         );
@@ -65,7 +70,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "transacao",
-            $std,
+            "true",
             true,
             "true - Se os RPS fazem parte de uma mesma transação."
         );
@@ -73,7 +78,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "dtInicio",
-            $std,
+            $std->DataEmissao,
             true,
             "Data de início do período transmitido. Data do primeiro RPS contido no lote Formato: YYYY-MM-DD"
         );
@@ -81,7 +86,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "dtFim",
-            $std,
+            $std->DataEmissao,
             true,
             "Data Final do período transmitido. Data do último RPS contida no lote Formato: YYYY-MM-DD"
         );
@@ -89,7 +94,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "QtdRPS",
-            $std,
+            '1',
             true,
             "Quantidade de RPS contidos na remessa"
         );
@@ -97,7 +102,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "ValorTotalServicos",
-            $std,
+            $std->ValorServicos,
             true,
             "Valor total dos Serviços prestados nos RPS"
         );
@@ -105,7 +110,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "ValorTotalDeducoes",
-            $std,
+            $std->Deducao,
             true,
             "Valor total das deduções nos RPS"
         );
@@ -126,18 +131,18 @@ class Make
             "Padrão “WS”"
         );
 
-        $xml1 = $this->dom->saveXML();
-
         $lote = $this->dom->createElement('Lote');
-        $this->dom->appendChild($lote);
+        $lote->setAttribute('Id', 'lote:1ABCDZ');
+        $req->appendChild($lote);
 
         $rps = $this->dom->createElement('RPS');
+        $rps->setAttribute('Id', 'rps:1');
         $lote->appendChild($rps);
 
         $this->dom->addChild(
             $rps,
             "Assinatura",
-            $std,
+            $hash,
             true,
             "Código hash de validação do conteúdo"
         );
@@ -145,7 +150,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "InscricaoMunicipalPrestador",
-            $std,
+            str_pad($this->std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
             true,
             "Inscrição Municipal do Prestador"
         );
@@ -153,7 +158,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "RazaoSocialPrestador",
-            'RPS',
+            $std->prestador->RazaoSocial,
             true,
             "Razão Social do Prestador"
         );
@@ -161,7 +166,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TipoRPS",
-            $std,
+            'RPS',
             true,
             "Tipo de RPS, padrão “RPS”"
         );
@@ -169,7 +174,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "SerieRPS",
-            $std,
+            $std->Serie,
             true,
             "Série do RPS - Padrão “NF”"
         );
@@ -177,7 +182,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "NumeroRPS",
-            $std,
+            $std->RPSNum,
             true,
             "Número da RPS"
         );
@@ -185,15 +190,15 @@ class Make
         $this->dom->addChild(
             $rps,
             "DataEmissaoRPS",
-            $std,
+            $std->DataEmissao,
             true,
-            "Data e Hora de EmissãoFormato: AAAA-MM-DDTHH:MM:SS"
+            "Data e Hora de Emissão Formato: AAAA-MM-DDTHH:MM:SS"
         );
 
         $this->dom->addChild(
             $rps,
             "SituacaoRPS",
-            $std,
+            $std->SituacaoRPS,
             true,
             "Situação da RPS “N”-Normal “C”-Cancelada"
         );
@@ -201,7 +206,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "SerieRPSSubstituido",
-            $std,
+            $std->SerieRPSSubstituido,
             false,
             "Série do RPS a ser substituído – Padrão “NF”. Se não for substituto não preencher"
         );
@@ -209,7 +214,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "NumeroRPSSubstituido",
-            $std,
+            $std->NumeroRPSSubstituido,
             false,
             "Número da NFSe Substituida Se não for subtituto não preencher"
         );
@@ -217,7 +222,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "NumeroNFSeSubstituida",
-            $std,
+            $std->NumeroNFSeSubstituida,
             false,
             "Número do RPS a ser substituído. Se não for substituto não preencher"
         );
@@ -225,7 +230,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DataEmissaoNFSeSubstituida",
-            $std,
+            "01/01/1900",
             false,
             "Data de emissão da NFSe Formato= AAAA-MM-DD. Se não for substituto preencher com “01/01/1900”"
         );
@@ -233,7 +238,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "SeriePrestacao",
-            $std,
+            $std->Serie,
             true,
             "Número do equipamento emissor do RPS ou série de prestação."
         );
@@ -241,7 +246,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "InscricaoMunicipalTomador",
-            $std,
+            $std->tomador->InscricaoMunicipal,
             true,
             "Inscrição Municipal do Tomador. Caso o tomador não for do municipio não preencher,"
         );
@@ -249,7 +254,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CPFCNPJTomador",
-            $std,
+            $std->tomador->Cnpj,
             true,
             "CPF ou CNPJ do Tomador"
         );
@@ -257,7 +262,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "RazaoSocialTomador",
-            $std,
+            $std->tomador->RazaoSocial,
             true,
             "Razão Social do Tomador"
         );
@@ -265,7 +270,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DocTomadorEstrangeiro",
-            $std,
+            $std->tomador->DocTomadorEstrangeiro,
             false,
             "Documento de Identificação de Tomador Estrangeiro"
         );
@@ -273,7 +278,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TipoLogradouroTomador",
-            $std,
+            $std->tomador->Prefixo,
             true,
             "Tipo de Logradouro do Tomador."
         );
@@ -281,15 +286,15 @@ class Make
         $this->dom->addChild(
             $rps,
             "LogradouroTomador",
-            $std,
+            $std->tomador->Endereco,
             true,
-            "Logradouro do Tomado"
+            "Logradouro do Tomador"
         );
 
         $this->dom->addChild(
             $rps,
             "NumeroEnderecoTomador",
-            $std,
+            $std->tomador->Numero,
             true,
             "Numero de Endereço do Tomado"
         );
@@ -297,7 +302,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ComplementoEnderecoTomador",
-            $std,
+            $std->tomador->Complemento,
             false,
             "Complemento do Endereço do Tomador"
         );
@@ -305,7 +310,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TipoBairroTomador",
-            $std,
+            $std->tomador->TipoBairro,
             true,
             "Tipo de Bairro do Tomador"
         );
@@ -313,7 +318,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "BairroTomador",
-            $std,
+            $std->tomador->Bairro,
             true,
             "Bairro do Tomador"
         );
@@ -321,7 +326,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CidadeTomador",
-            $std,
+            $std->tomador->CodigoMunicipio,
             true,
             "Código da Cidade do Tomador padrão SIAFI"
         );
@@ -329,7 +334,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CidadeTomadorDescricao",
-            $std,
+            $std->tomador->DescMunicipio,
             true,
             "Nome da Cidade do Tomador"
         );
@@ -337,7 +342,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CEPTomador",
-            $std,
+            $std->tomador->Cep,
             true,
             "CEP do Tomador"
         );
@@ -345,7 +350,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "EmailTomador",
-            $std,
+            $std->tomador->Email,
             true,
             "Email do Tomador. Caso o Tomador não possua email informar o valor “-”. "
         );
@@ -353,7 +358,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CodigoAtividade",
-            $std,
+            $std->CodigoCnae,
             true,
             "Código da Atividade da RPS"
         );
@@ -361,7 +366,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaAtividade",
-            $std,
+            $std->Aliquota,
             true,
             "Alíquota de ISS da Atividade"
         );
@@ -369,7 +374,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TipoRecolhimento",
-            $std,
+            $std->TipoRecolhimento,
             true,
             "Tipo de Recolhimento “A” – A Receber “R” - Retido na Fonte"
         );
@@ -377,15 +382,15 @@ class Make
         $this->dom->addChild(
             $rps,
             "MunicipioPrestacao",
-            $std,
+            $std->CodigoMunicipioPrest,
             true,
-            "Código do Município de Prestação"
+            "Código do Município de Prestação – Padrão SIAFI"
         );
 
         $this->dom->addChild(
             $rps,
             "MunicipioPrestacaoDescricao",
-            $std,
+            $std->DescMunicipioPrest,
             true,
             "Município de Prestação do Serviço"
         );
@@ -393,7 +398,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "Operacao",
-            $std,
+            $std->Operacao,
             true,
             "
                 “A”-Sem Dedução
@@ -407,7 +412,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "Tributacao",
-            $std,
+            $std->Tributacao,
             true,
             "
                 C - Isenta de ISS
@@ -425,7 +430,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ValorPIS",
-            $std,
+            $std->ValorPis,
             true,
             "Valor PIS"
         );
@@ -433,7 +438,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ValorCOFINS",
-            $std,
+            $std->ValorCofins,
             true,
             "Valor COFINS"
         );
@@ -441,7 +446,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ValorINSS",
-            $std,
+            $std->ValorInss,
             true,
             "Valor do INSS"
         );
@@ -449,7 +454,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ValorIR",
-            $std,
+            $std->ValorIr,
             true,
             "Valor do IR"
         );
@@ -457,7 +462,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "ValorCSLL",
-            $std,
+            $std->ValorCsll,
             true,
             "Valor do CSLL"
         );
@@ -465,7 +470,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaPIS",
-            $std,
+            $std->AliquotaPIS,
             true,
             "Alíquota PIS"
         );
@@ -473,7 +478,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaCOFINS",
-            $std,
+            $std->AliquotaCOFINS,
             true,
             "Alíquota COFINS"
         );
@@ -481,7 +486,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaINSS",
-            $std,
+            $std->AliquotaINSS,
             true,
             "Alíquota INSS"
         );
@@ -489,7 +494,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaIR",
-            $std,
+            $std->AliquotaIR,
             true,
             "Alíquota IR"
         );
@@ -497,7 +502,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "AliquotaCSLL",
-            $std,
+            $std->AliquotaCSLL,
             true,
             "Alíquota CSLL"
         );
@@ -505,7 +510,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DescricaoRPS",
-            $std,
+            $std->Observacao,
             true,
             "Descrição/Dados Complementares do RPS"
         );
@@ -513,7 +518,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DDDPrestador",
-            $std,
+            $std->prestador->TelefonePrest,
             false,
             "DDD Telefone do Prestador"
         );
@@ -521,7 +526,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TelefonePrestador",
-            $std,
+            $std->prestador->TelefonePrest,
             false,
             "Telefone do Prestador"
         );
@@ -529,7 +534,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DDDTomador",
-            $std,
+            $std->tomador->Telefone,
             false,
             "DDD do telefone do tomador"
         );
@@ -537,7 +542,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "TelefoneTomador",
-            $std,
+            $std->tomador->Telefone,
             false,
             "Telefone do Tomador"
         );
@@ -545,7 +550,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "MotCancelamento",
-            $std,
+            $std->Observacao,
             false,
             "Motivo do Cancelamento"
         );
@@ -553,7 +558,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "CpfCnpjIntermediario",
-            $std,
+            "",
             false,
             "CPF/CNPJ Intemediário"
         );
@@ -569,7 +574,7 @@ class Make
             $this->dom->addChild(
                 $item,
                 "DiscriminacaoServico",
-                $std->servico,
+                $std->Discriminacao,
                 true,
                 "Discriminação do Serviço"
             );
@@ -577,7 +582,7 @@ class Make
             $this->dom->addChild(
                 $item,
                 "Quantidade",
-                $std->servico,
+                $std->Quantidade,
                 true,
                 "Quantidade do serviço tomado"
             );
@@ -585,7 +590,7 @@ class Make
             $this->dom->addChild(
                 $item,
                 "ValorUnitario",
-                $std->servico,
+                $std->ValorUnit,
                 true,
                 "Valor Unitário"
             );
@@ -593,7 +598,7 @@ class Make
             $this->dom->addChild(
                 $item,
                 "ValorTotal",
-                $std->servico,
+                $std->ValorServicos,
                 true,
                 "Valor total do serviço"
             );
@@ -601,15 +606,14 @@ class Make
             $this->dom->addChild(
                 $item,
                 "Tributavel",
-                $std->servico,
+                $std->Tributavel,
                 true,
                 "Tributável S-Item tributável, N-Não tributável."
             );
         }
 
-        $xml2 = $this->dom->saveXML();
-
-        $this->xml = $xml1 . $xml2;
+        $this->xml = $this->dom->saveXML();
+        var_dump($this->xml);
         return $this->xml;
     }
 
