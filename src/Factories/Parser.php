@@ -49,7 +49,9 @@ class Parser
 
         $std = $this->array2xml($nota);
 
-        // $this->fixFields();
+        $this->fixDates();
+
+        $this->fixPhoneNumbers();
 
         $hash = $this->createSignature();
 
@@ -136,10 +138,29 @@ class Parser
         $cnpj = str_pad($this->std->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
 
         $assinatura = $inscrMunicipal . $serie . $rpsNum . $dtEmi . $tributacao . $situacaoRPS . $tipoRec . $resultado . $deducao . $codigoCnae . $cnpj;
-        
+
         $hash = sha1($assinatura);
-        
+
         return $hash;
+    }
+
+    protected function fixDates()
+    {
+
+        $this->std->DataInit = substr($this->std->DataEmissao, 0, 10);
+        $this->std->DataEnd = substr($this->std->DataEmissao, 0, 10);
+    }
+
+    protected function fixPhoneNumbers()
+    {
+        $this->std->tomador->DDDTomador = substr($this->std->tomador->Telefone, 0, 2);
+        $this->std->tomador->Telefone = substr($this->std->tomador->Telefone, 2);
+
+        if ($this->std->prestador->TelefonePrest) {
+
+            $this->std->prestador->DDDPrestador = substr($this->std->prestador->TelefonePrest, 0, 2);
+            $this->std->prestador->TelefonePrest = substr($this->std->prestador->TelefonePrest, 2);
+        }
     }
 
     // protected function fixFields()

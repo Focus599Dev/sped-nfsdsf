@@ -78,7 +78,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "dtInicio",
-            $std->DataEmissao,
+            $std->DataInit,
             true,
             "Data de início do período transmitido. Data do primeiro RPS contido no lote Formato: YYYY-MM-DD"
         );
@@ -86,7 +86,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "dtFim",
-            $std->DataEmissao,
+            $std->DataEnd,
             true,
             "Data Final do período transmitido. Data do último RPS contida no lote Formato: YYYY-MM-DD"
         );
@@ -150,7 +150,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "InscricaoMunicipalPrestador",
-            str_pad($this->std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
             true,
             "Inscrição Municipal do Prestador"
         );
@@ -230,7 +230,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "DataEmissaoNFSeSubstituida",
-            "01/01/1900",
+            "1900-01-01",
             false,
             "Data de emissão da NFSe Formato= AAAA-MM-DD. Se não for substituto preencher com “01/01/1900”"
         );
@@ -238,7 +238,7 @@ class Make
         $this->dom->addChild(
             $rps,
             "SeriePrestacao",
-            $std->Serie,
+            '99',
             true,
             "Número do equipamento emissor do RPS ou série de prestação."
         );
@@ -519,7 +519,7 @@ class Make
             $rps,
             "DDDPrestador",
             $std->prestador->TelefonePrest,
-            false,
+            true,
             "DDD Telefone do Prestador"
         );
 
@@ -527,15 +527,15 @@ class Make
             $rps,
             "TelefonePrestador",
             $std->prestador->TelefonePrest,
-            false,
+            true,
             "Telefone do Prestador"
         );
 
         $this->dom->addChild(
             $rps,
             "DDDTomador",
-            $std->tomador->Telefone,
-            false,
+            $std->tomador->DDDTomador,
+            true,
             "DDD do telefone do tomador"
         );
 
@@ -613,7 +613,7 @@ class Make
         }
 
         $this->xml = $this->dom->saveXML();
-        var_dump($this->xml);
+        echo $this->xml;
         return $this->xml;
     }
 
