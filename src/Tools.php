@@ -39,8 +39,8 @@ class Tools extends ToolsBase
         echo $auxRequest;
         $auxRequest = htmlspecialchars_decode($auxRequest);
 
-        $auxRequest = $this->removeStuffs($auxRequest);
-
+        // $auxRequest = $this->removeStuffs($auxRequest);
+        var_dump($auxRequest);
         return $auxRequest;
     }
 
