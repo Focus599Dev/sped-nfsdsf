@@ -36,7 +36,7 @@ class Make
     {
         $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
         $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
-        $req->setAttribute('xmlns:tipos', 'http://localhost:8080/WsNFe2/tp');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqEnvioLoteRPS.xsd');
         $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $this->dom->appendChild($req);
 
@@ -46,7 +46,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,                                     // pai
             "CodCidade",                                    // nome
-            '7145',                                         // valor
+            $std->CodigoMunicipioPrest,                                         // valor
             true,                                           // se é obrigatorio
             "Código da cidade da declaração padrão SIAFI."  // descrição se der catch
         );
@@ -613,7 +613,7 @@ class Make
         }
 
         $this->xml = $this->dom->saveXML();
-        echo $this->xml;
+
         return $this->xml;
     }
 
@@ -657,36 +657,6 @@ class Make
             $std->observacao,
             true,
             "Observação do cancelamento da NFS-e"
-        );
-
-        $this->xml = $this->dom->saveXML();
-
-        return $this->xml;
-    }
-
-    public function consultaLote($std)
-    {
-
-        $root = $this->dom->createElement('NFSE');
-        $this->dom->appendChild($root);
-
-        $identificacao = $this->dom->createElement('IDENTIFICACAO');
-        $root->appendChild($identificacao);
-
-        $this->dom->addChild(
-            $identificacao,
-            "INSCRICAO",
-            $this->inscricaoUser,
-            true,
-            "Inscrição mobiliária do prestador da NFS-e"
-        );
-
-        $this->dom->addChild(
-            $identificacao,
-            "LOTE",
-            $std->nfml_numero_lote,
-            true,
-            "Lote da NFS-e, numeros inteiros de até 9"
         );
 
         $this->xml = $this->dom->saveXML();

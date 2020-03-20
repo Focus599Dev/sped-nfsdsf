@@ -28,19 +28,18 @@ class Tools extends ToolsBase
         $xsd = 'ReqEnvioLoteRPS.xsd';
 
         $this->isValid($xml, $xsd);
-        var_dump('ae');
+
         $request = $this->envelopXML($xml, $servico);
 
         $this->lastRequest = htmlspecialchars_decode($request);
 
         $request = $this->envelopSoapXML($request);
-
+        echo $request;
         $auxRequest = $this->sendRequest($request, $this->soapUrl);
-        echo $auxRequest;
-        $auxRequest = htmlspecialchars_decode($auxRequest);
 
-        // $auxRequest = $this->removeStuffs($auxRequest);
-        var_dump($auxRequest);
+        $auxRequest = htmlspecialchars_decode($auxRequest);
+        var_dump('-');
+        echo $auxRequest;
         return $auxRequest;
     }
 

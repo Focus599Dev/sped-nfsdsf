@@ -128,12 +128,12 @@ class Parser
         $inscrMunicipal = str_pad($this->std->prestador->InscricaoMunicipal, 11, "0", STR_PAD_LEFT);
         $serie = str_pad($this->std->Serie, 5, " ");
         $rpsNum = str_pad($this->std->RPSNum, 12, "0", STR_PAD_LEFT);
-        $dtEmi = $this->std->DataEmissao;
+        $dtEmi = substr(preg_replace('/[^0-9]/', '', $this->std->DataEmissao), 0, 8);
         $tributacao = str_pad($this->std->Tributacao, 2, " ");
         $situacaoRPS = $this->std->SituacaoRPS;
-        $tipoRec = $this->std->TipoRecolhimento;
+        $tipoRec = $this->std->TipoRecolhimento;         $tipoRec = 'N';
         $resultado = str_pad($this->std->ValorServicos - $this->std->Deducao, 15, "0", STR_PAD_LEFT);
-        $deducao = str_pad($this->std->Deducao, 15, "0", STR_PAD_LEFT);
+        $deducao = str_pad(preg_replace( '/[^0-9]/', '', $this->std->Deducao), 15, "0", STR_PAD_LEFT);
         $codigoCnae = str_pad($this->std->CodigoCnae, 10, "0", STR_PAD_LEFT);
         $cnpj = str_pad($this->std->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
 
