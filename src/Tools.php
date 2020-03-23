@@ -29,18 +29,19 @@ class Tools extends ToolsBase
 
         $this->isValid($xml, $xsd);
 
+        $this->lastRequest = htmlspecialchars_decode($xml);
+
         $request = $this->envelopXML($xml, $servico);
 
-        $this->lastRequest = htmlspecialchars_decode($request);
-
         $request = $this->envelopSoapXML($request);
-        echo $request;
-        $auxRequest = $this->sendRequest($request, $this->soapUrl);
 
-        $auxRequest = htmlspecialchars_decode($auxRequest);
-        var_dump('-');
-        echo $auxRequest;
-        return $auxRequest;
+        $response = $this->sendRequest($request, $this->soapUrl);
+        
+        $response = strip_tags($response);
+
+        $response = htmlspecialchars_decode($response);
+
+        return $response;
     }
 
     public function CancelaNfse($std)
