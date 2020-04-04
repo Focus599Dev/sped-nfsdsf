@@ -620,43 +620,85 @@ class Make
     public function cancelamento($std)
     {
 
-        $root = $this->dom->createElement('NFSE');
-        $this->dom->appendChild($root);
+        $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
+        $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqEnvioLoteRPS.xsd');
+        $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $this->dom->appendChild($req);
 
-        $identificacao = $this->dom->createElement('IDENTIFICACAO');
-        $root->appendChild($identificacao);
+        $cabecalho = $this->dom->createElement('Cabecalho');
+        $req->appendChild($cabecalho);
 
         $this->dom->addChild(
-            $identificacao,
-            "INSCRICAO",
-            $this->inscricaoUser,
+            $cabecalho,
+            "CodCidade",
+            $std->CodigoMunicipioPrest,
             true,
-            "Inscrição mobiliária do prestador da NFS-e"
+            "Código da cidade da declaração padrão SIAFI."
         );
 
         $this->dom->addChild(
-            $identificacao,
-            "LOTE",
-            $std->sequencia,
+            $cabecalho,
+            "CPFCNPJRemetente",
+            $std->prestador->Cnpj,
             true,
-            "Lote da NFS-e, numeros inteiros de até 9"
+            "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
 
         $this->dom->addChild(
-            $identificacao,
-            "SEQUENCIA",
+            $cabecalho,
+            "transacao",
+            "true",
+            true,
+            "true - Se os RPS fazem parte de uma mesma transação."
+        );
+
+        $this->dom->addChild(
+            $cabecalho,
+            "Versao",
             '1',
-            // $std->sequencia,
             true,
-            "Sequência da NFS-e, numeros inteiros de até 9"
+            "Informe a versão do Schema XML. Padrão “1”"
+        );
+
+        $lote = $this->dom->createElement('Lote');
+        $lote->setAttribute('Id', 'lote:1ABCDZ');
+        $req->appendChild($lote);
+
+        $nota = $this->dom->createElement('Nota');
+        $nota->setAttribute('Nota', 'id:1');
+        $lote->appendChild($nota);
+
+        $this->dom->addChild(
+            $lote,
+            "InscricaoMunicipalPrestador",
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            true,
+            "Inscrição Municipal do Prestador"
         );
 
         $this->dom->addChild(
-            $identificacao,
-            "OBSERVACAO",
-            $std->observacao,
+            $lote,
+            "NumeroNota",
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
             true,
-            "Observação do cancelamento da NFS-e"
+            "Inscrição Municipal do Prestador"
+        );
+
+        $this->dom->addChild(
+            $lote,
+            "CodigoVerificacao",
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            true,
+            "Inscrição Municipal do Prestador"
+        );
+
+        $this->dom->addChild(
+            $lote,
+            "MotivoCancelamento",
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            true,
+            "Inscrição Municipal do Prestador"
         );
 
         $this->xml = $this->dom->saveXML();
@@ -667,34 +709,45 @@ class Make
     public function consulta($std)
     {
 
-        $root = $this->dom->createElement('NFSE');
-        $this->dom->appendChild($root);
+        $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
+        $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqEnvioLoteRPS.xsd');
+        $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $this->dom->appendChild($req);
 
-        $identificacao = $this->dom->createElement('IDENTIFICACAO');
-        $root->appendChild($identificacao);
+        $cabecalho = $this->dom->createElement('Cabecalho');
+        $req->appendChild($cabecalho);
 
         $this->dom->addChild(
-            $identificacao,
-            "INSCRICAO",
-            $this->inscricaoUser,
+            $cabecalho,
+            "CodCidade",
+            $std->CodigoMunicipioPrest,
             true,
-            "Inscrição mobiliária do prestador da NFS-e"
+            "Código da cidade da declaração padrão SIAFI."
         );
 
         $this->dom->addChild(
-            $identificacao,
-            "LOTE",
-            $std->NumeroLote,
+            $cabecalho,
+            "CPFCNPJRemetente",
+            $std->prestador->Cnpj,
             true,
-            "Lote da NFS-e, numeros inteiros de até 9"
+            "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
 
         $this->dom->addChild(
-            $identificacao,
-            "SEQUENCIA",
-            $std->Sequencia,
+            $cabecalho,
+            "Versao",
+            '1',
             true,
-            "Sequência da NFS-e, numeros inteiros de até 9"
+            "Informe a versão do Schema XML. Padrão “1”"
+        );
+
+        $this->dom->addChild(
+            $lote,
+            "NumeroLote",
+            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            true,
+            "Numero do lote a ser consultado"
         );
 
         $this->xml = $this->dom->saveXML();

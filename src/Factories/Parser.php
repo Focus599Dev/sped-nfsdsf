@@ -131,9 +131,9 @@ class Parser
         $dtEmi = substr(preg_replace('/[^0-9]/', '', $this->std->DataEmissao), 0, 8);
         $tributacao = str_pad($this->std->Tributacao, 2, " ");
         $situacaoRPS = $this->std->SituacaoRPS;
-        $tipoRec = $this->std->TipoRecolhimento;         $tipoRec = 'N';
-        $resultado = str_pad($this->std->ValorServicos - $this->std->Deducao, 15, "0", STR_PAD_LEFT);
-        $deducao = str_pad(preg_replace( '/[^0-9]/', '', $this->std->Deducao), 15, "0", STR_PAD_LEFT);
+        $tipoRec = $this->std->TipoRecolhimento;
+        $resultado = str_pad(str_replace('.', '', $this->std->ValorServicos - $this->std->Deducao), 15, "0", STR_PAD_LEFT);
+        $deducao = str_pad(preg_replace('/[^0-9]/', '', $this->std->Deducao), 15, "0", STR_PAD_LEFT);
         $codigoCnae = str_pad($this->std->CodigoCnae, 10, "0", STR_PAD_LEFT);
         $cnpj = str_pad($this->std->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
 
