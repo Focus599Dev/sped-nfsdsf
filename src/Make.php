@@ -620,9 +620,9 @@ class Make
     public function cancelamento($std)
     {
 
-        $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
+        $req = $this->dom->createElement('ns1:ReqCancelamentoNFSe');
         $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
-        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqEnvioLoteRPS.xsd');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqCancelamentoNFSe.xsd');
         $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $this->dom->appendChild($req);
 
@@ -706,12 +706,11 @@ class Make
         return $this->xml;
     }
 
-    public function consulta($std)
+    public function consulta($std, $codigoCidade)
     {
-
-        $req = $this->dom->createElement('ns1:ReqEnvioLoteRPS');
+        $req = $this->dom->createElement('ns1:ReqConsultaLote');
         $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
-        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqEnvioLoteRPS.xsd');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ReqConsultaLote.xsd');
         $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $this->dom->appendChild($req);
 
@@ -721,7 +720,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CodCidade",
-            $std->CodigoMunicipioPrest,
+            $codigoCidade,
             true,
             "Código da cidade da declaração padrão SIAFI."
         );
@@ -729,7 +728,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CPFCNPJRemetente",
-            $std->prestador->Cnpj,
+            $std->nfml_cnpj_emit,
             true,
             "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
@@ -743,9 +742,9 @@ class Make
         );
 
         $this->dom->addChild(
-            $lote,
+            $cabecalho,
             "NumeroLote",
-            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            $std->nfml_rps,
             true,
             "Numero do lote a ser consultado"
         );

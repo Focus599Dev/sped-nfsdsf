@@ -84,4 +84,13 @@ class Tools
             $schema
         );
     }
+
+    protected function getCodCidadeSIAFI($std){
+
+        if ($std->nfml_cmun == '3552205') {
+            $codigoCidade = '7145';
+        }
+
+        return $codigoCidade;
+    }
 }

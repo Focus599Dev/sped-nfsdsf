@@ -36,7 +36,7 @@ class Tools extends ToolsBase
         $request = $this->envelopSoapXML($request);
 
         $response = $this->sendRequest($request, $this->soapUrl);
-        
+
         $response = strip_tags($response);
 
         $response = htmlspecialchars_decode($response);
@@ -59,19 +59,13 @@ class Tools extends ToolsBase
 
         $request = $this->envelopSoapXML($request);
 
-        $this->lastResponse = $this->sendRequest($request, $this->soapUrl);
+        $response = $this->sendRequest($request, $this->soapUrl);
 
-        $this->lastResponse = htmlspecialchars_decode($this->lastResponse);
+        $response = strip_tags($response);
 
-        $this->lastResponse = $this->removeStuffs($this->lastResponse);
+        $response = htmlspecialchars_decode($response);
 
-        $this->lastResponse = substr($this->lastResponse, strpos($this->lastResponse, '<Mensagem>') + 10);
-
-        $this->lastResponse = substr($this->lastResponse, 0, strpos($this->lastResponse, '</Mensagem>'));
-
-        $auxResp = $this->lastResponse;
-
-        return $auxResp;
+        return $response;
     }
 
     public function consultaSituacaoLoteRPS($std)
@@ -79,56 +73,24 @@ class Tools extends ToolsBase
 
         $make = new Make();
 
-        $xml = $make->consultaLote($std);
+        $codigoCidade = $this->getCodCidadeSIAFI($std);
+
+        $xml = $make->consulta($std, $codigoCidade);
 
         $xml = Strings::clearXmlString($xml);
 
-        $servico = 'consultarNota';
+        $servico = 'consultarLote';
 
         $request = $this->envelopXML($xml, $servico);
 
         $request = $this->envelopSoapXML($request);
 
-        $this->lastResponse = $this->sendRequest($request, $this->soapUrl);
+        $response = $this->sendRequest($request, $this->soapUrl);
 
-        $this->lastResponse = htmlspecialchars_decode($this->lastResponse);
+        $response = strip_tags($response);
 
-        $this->lastResponse = $this->removeStuffs($this->lastResponse);
+        $response = htmlspecialchars_decode($response);
 
-        $this->lastResponse = substr($this->lastResponse, strpos($this->lastResponse, '<Mensagem>') + 10);
-
-        $this->lastResponse = substr($this->lastResponse, 0, strpos($this->lastResponse, '</Mensagem>'));
-
-        $auxResp = simplexml_load_string($this->lastResponse);
-
-        return $auxResp;
-    }
-
-    public function testeEnviaRPS($xml)
-    {
-
-        if (empty($xml)) {
-            throw new InvalidArgumentException('$xml');
-        }
-
-        $xml = Strings::clearXmlString($xml);
-
-        $servico = 'testeEnviar';
-
-        $xsd = 'ReqEnvioLoteRPS.xsd';
-
-        $this->isValid($xml, $xsd);
-
-        $request = $this->envelopXML($xml, $servico);
-
-        $request = $this->envelopSoapXML($request);
-
-        $auxRequest = $this->sendRequest($request, $this->soapUrl);
-
-        $auxRequest = htmlspecialchars_decode($auxRequest);
-
-        // $auxRequest = $this->removeStuffs($auxRequest);
-
-        return $auxRequest;
+        return $response;
     }
 }
