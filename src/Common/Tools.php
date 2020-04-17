@@ -23,8 +23,16 @@ class Tools
         ) . '/';
 
         $this->config = json_decode($configJson);
+        
+        if ($this->config->municipio == '3552205') { #Sorocaba
 
-        $this->soapUrl = 'http://www.issdigitalsod.com.br/WsNFe2/LoteRps.jws?wsdl';
+            $this->soapUrl = 'http://www.issdigitalsod.com.br/WsNFe2/LoteRps.jws?wsdl';
+
+        } elseif ($this->config->municipio == '3170206') { #Uberlândia
+
+            $this->soapUrl = 'http://udigital.uberlandia.mg.gov.br/WsNFe2/LoteRps.jws?wsdl';
+        }
+        
     }
 
     protected function sendRequest($request, $soapUrl)
@@ -85,10 +93,14 @@ class Tools
         );
     }
 
-    protected function getCodCidadeSIAFI($std){
+    protected function getCodCidadeSIAFI($std)
+    {
 
         if ($std->nfml_cmun == '3552205') {
             $codigoCidade = '7145';
+
+        } elseif ($std->nfml_cmun == '3170206') {
+            $codigoCidade = '5403';
         }
 
         return $codigoCidade;
