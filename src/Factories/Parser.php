@@ -25,7 +25,7 @@ class Parser
 
         $ver = str_replace('.', '', $version);
 
-        $path = realpath(__DIR__ . "/../../storage/txtstructure$ver.json");
+        $path = realpath(__DIR__ . "/../../storage/txtstructure301.json");
 
         $this->std = new \stdClass();
 
@@ -52,6 +52,8 @@ class Parser
         $this->fixDates();
 
         $this->fixPhoneNumbers();
+
+        $this->getCodCidadeSIAFI($this->std);
 
         $hash = $this->createSignature();
 
@@ -169,49 +171,22 @@ class Parser
         }
     }
 
-    // protected function fixFields()
-    // {
+    protected function getCodCidadeSIAFI($std)
+    {
 
-    //     $impostos = ['Pis', 'Cofins', 'Inss', 'Ir', 'Csll', 'Icms', 'Ipi', 'Iof', 'Cide', 'OutrosTributos', 'OutrasRetencoes'];
+        if ($std->tomador->CodigoMunicipio == '3552205') {
+            $codigoCidade = '7145';
+            $this->std->SIAFI = '7145';
 
-    //     $aux = explode('T', $this->std->DataEmissao);
+        } elseif ($std->tomador->CodigoMunicipio == '3170206') {
+            $codigoCidade = '5403';
+            $this->std->SIAFI = '5403';
 
-    //     $this->std->DataEmissao = $aux[0];
+        } elseif ($std->tomador->CodigoMunicipio == '3549409') {
+            $codigoCidade = '7089';
+            $this->std->SIAFI = '7089';
+        }
 
-    //     $this->std->HoraEmissao = $aux[1];
-
-    //     if ($this->std->IssRetido == '1') {
-
-    //         $this->std->IssRetido = 'S';
-    //     } else {
-
-    //         $this->std->IssRetido = 'N';
-
-    //         $this->std->ValorIssRetido = '0.00';
-    //     }
-
-    //     foreach ($impostos as $value) {
-
-    //         $this->std->{'Ret' . $value} = $this->retImpostos($this->std->{'Valor' . $value});
-
-    //         if ($this->std->{'Ret' . $value} == 'N') {
-
-    //             $this->std->{'Valor' . $value} = '0.00';
-    //         }
-    //     }
-
-    //     $this->std->RPSNum = '0000-00' . substr($this->std->RPSNum, 0, 2) . '-' . substr($this->std->RPSNum, -4);
-    // }
-
-    // protected function retImpostos($imposto)
-    // {
-
-    //     if ($imposto) {
-
-    //         return $ret = 'S';
-    //     } else {
-
-    //         return $ret = 'N';
-    //     }
-    // }
+        return $codigoCidade;
+    }
 }

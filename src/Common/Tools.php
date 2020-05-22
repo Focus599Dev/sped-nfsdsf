@@ -32,7 +32,7 @@ class Tools
 
             $this->soapUrl = 'http://udigital.uberlandia.mg.gov.br/WsNFe2/LoteRps.jws?wsdl';
         }
-        
+
     }
 
     protected function sendRequest($request, $soapUrl)
@@ -98,9 +98,11 @@ class Tools
 
         if ($std->nfml_cmun == '3552205') {
             $codigoCidade = '7145';
+            $std->CodigoMunicipioPrest = '7145';
 
         } elseif ($std->nfml_cmun == '3170206') {
             $codigoCidade = '5403';
+            $std->CodigoMunicipioPrest = '5403';
         }
 
         return $codigoCidade;
