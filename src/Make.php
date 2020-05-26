@@ -632,7 +632,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CodCidade",
-            $std->CodigoMunicipioPrest,
+            $std->CodigoMunicipio,
             true,
             "Código da cidade da declaração padrão SIAFI."
         );
@@ -640,7 +640,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CPFCNPJRemetente",
-            $std->prestador->Cnpj,
+            $std->cnpj,
             true,
             "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
@@ -666,13 +666,13 @@ class Make
         $req->appendChild($lote);
 
         $nota = $this->dom->createElement('Nota');
-        $nota->setAttribute('Nota', 'id:1');
+        $nota->setAttribute('Nota', 'id:' . $std->Numero);
         $lote->appendChild($nota);
 
         $this->dom->addChild(
             $lote,
             "InscricaoMunicipalPrestador",
-            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            $std->InscricaoMunicipal,
             true,
             "Inscrição Municipal do Prestador"
         );
@@ -680,25 +680,25 @@ class Make
         $this->dom->addChild(
             $lote,
             "NumeroNota",
-            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            $std->Numero,
             true,
-            "Inscrição Municipal do Prestador"
+            "Número da nota a ser cancelada"
         );
 
         $this->dom->addChild(
             $lote,
             "CodigoVerificacao",
-            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            $std->CodigoCancelamento,
             true,
-            "Inscrição Municipal do Prestador"
+            "Código de verificação da nota"
         );
 
         $this->dom->addChild(
             $lote,
             "MotivoCancelamento",
-            str_pad($std->prestador->InscricaoMunicipal, 9, "0", STR_PAD_LEFT),
+            $std->observacao,
             true,
-            "Inscrição Municipal do Prestador"
+            "Motivo do cancelamento"
         );
 
         $this->xml = $this->dom->saveXML();
