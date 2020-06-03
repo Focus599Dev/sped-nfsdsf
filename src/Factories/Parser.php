@@ -6,6 +6,7 @@ use NFePHP\NFSe\DSF\Make;
 use stdClass;
 use NFePHP\Common\Strings;
 use App\Http\Model\Uteis;
+use VARIANT;
 
 class Parser
 {
@@ -29,13 +30,15 @@ class Parser
 
         $this->std = new \stdClass();
 
-        $this->std->tomador = new \stdClass();
+        $this->lote = new \stdClass();
 
-        $this->std->prestador = new \stdClass();
+        $this->lote->tomador = new \stdClass();
 
-        $this->std->servico = array();
+        $this->lote->prestador = new \stdClass();
 
-        $this->servicos = array();
+        $this->cabecalho = new \stdClass();
+
+        $this->servico = new \stdClass();
 
         $this->structure = json_decode(file_get_contents($path), true);
 
@@ -47,19 +50,11 @@ class Parser
     public function toXml($nota)
     {
 
-        $std = $this->array2xml($nota);
+        $this->array2xml($nota);
 
-        $this->fixDates();
+        if ($this->make->monta()) {
 
-        $this->fixPhoneNumbers();
-
-        $this->getCodCidadeSIAFI($this->std);
-
-        $hash = $this->createSignature();
-
-        if ($this->make->getXML($this->std, $hash)) {
-
-            return $this->make->getXML($this->std, $hash);
+            return $this->make->getXML();
         }
 
         return null;
@@ -68,20 +63,25 @@ class Parser
     protected function array2xml($nota)
     {
 
-        $obj = [];
-
         foreach ($nota as $lin) {
 
             $fields = explode('|', $lin);
 
-            $struct = $this->structure[strtoupper($fields[0])];
+            if (empty($fields)) {
+                continue;
+            }
 
-            $std = $this->fieldsToStd($fields, $struct);
+            $metodo = strtolower(str_replace(' ', '', $fields[0])) . 'Entity';
 
-            $obj = (object) array_merge((array) $obj, (array) $std);
+            if (method_exists(__CLASS__, $metodo)) {
+
+                $struct = $this->structure[strtoupper($fields[0])];
+
+                $std = $this->fieldsToStd($fields, $struct);
+
+                $this->$metodo($std);
+            }
         }
-
-        return $obj;
     }
 
     protected function fieldsToStd($dfls, $struct)
@@ -90,6 +90,8 @@ class Parser
         $sfls = explode('|', $struct);
 
         $len = count($sfls) - 1;
+
+        $std = new \stdClass();
 
         for ($i = 1; $i < $len; $i++) {
 
@@ -102,48 +104,124 @@ class Parser
 
             if (!empty($name)) {
 
-                if ($dfls[0] == 'C') {
-
-                    $this->std->prestador->$name = Strings::replaceSpecialsChars($data);
-                } elseif ($dfls[0] == 'E' || $dfls[0] == 'E02') {
-
-                    $this->std->tomador->$name = Strings::replaceSpecialsChars($data);
-                } else {
-
-                    $this->std->$name = Strings::replaceSpecialsChars($data);
-                }
+                $std->$name = Strings::replaceSpecialsChars($data);
             }
         }
 
-        if ($dfls[0] == 'N') {
+        return $std;
+    }
 
-            $this->servicos[] = $dfls;
+    private function aEntity($std)
+    {
+        $this->loteRps = $std;
+    }
 
-            $this->std->servico = $this->servicos;
+    private function bEntity($std)
+    {
+        $this->loteRps = (object) array_merge((array) $this->loteRps, (array) $std);
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+    }
+
+    private function cEntity($std)
+    {
+        if ($std->TelefonePrest) {
+
+            $std->DDDPrestador = substr($std->TelefonePrest, 0, 2);
+            $std->TelefonePrest = substr($std->TelefonePrest, 2);
         }
 
-        return $this->std;
+        $this->cabecalho = (object) array_merge((array) $this->cabecalho, (array) $std);
+
+        $this->lote->prestador = (object) array_merge((array) $this->lote->prestador, (array) $std);
+    }
+
+    private function eEntity($std)
+    {
+        $std->DDDTomador = substr($std->Telefone, 0, 2);
+        $std->Telefone = substr($std->Telefone, 2);
+
+        $this->lote->tomador = (object) array_merge((array) $this->lote->tomador, (array) $std);
+    }
+
+    private function e02Entity($std)
+    {
+
+        $this->lote->tomador = (object) array_merge((array) $this->lote->tomador, (array) $std);
+    }
+
+    private function fEntity($std)
+    {
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+    }
+
+    private function hEntity($std)
+    {
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+    }
+
+    private function h01Entity($std)
+    {
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+    }
+
+    private function mEntity($std)
+    {
+        $this->cabecalho = (object) array_merge((array) $this->cabecalho, (array) $std);
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+
+        $this->servico = (object) array_merge((array) $this->servico, (array) $std);
+    }
+
+    private function nEntity($std)
+    {
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+
+        $this->servico = (object) array_merge((array) $this->servico, (array) $std);
+
+        $this->make->buildServico($this->servico);
+    }
+
+    private function wEntity($std)
+    {
+        $std->DataInit = substr($std->DataEmissao, 0, 10);
+
+        $std->DataEnd = substr($std->DataEmissao, 0, 10);
+
+        $this->cabecalho = (object) array_merge((array) $this->cabecalho, (array) $std);
+
+        $this->make->buildCabec($this->cabecalho);
+
+        $this->lote = (object) array_merge((array) $this->lote, (array) $std);
+
+        $this->lote->assinatura = $this->createSignature();
+
+        $this->make->buildLote($this->lote);
     }
 
     protected function createSignature()
     {
-        $inscrMunicipal = str_pad($this->std->prestador->InscricaoMunicipal, 11, "0", STR_PAD_LEFT);
-        $serie = str_pad($this->std->Serie, 5, " ");
-        $rpsNum = str_pad($this->std->RPSNum, 12, "0", STR_PAD_LEFT);
-        $dtEmi = substr(preg_replace('/[^0-9]/', '', $this->std->DataEmissao), 0, 8);
-        $tributacao = str_pad($this->std->Tributacao, 2, " ");
-        $situacaoRPS = $this->std->SituacaoRPS;
+        $inscrMunicipal = str_pad($this->lote->prestador->InscricaoMunicipal, 11, "0", STR_PAD_LEFT);
+        $serie = str_pad($this->lote->Serie, 5, " ");
+        $rpsNum = str_pad($this->lote->RPSNum, 12, "0", STR_PAD_LEFT);
+        $dtEmi = substr(preg_replace('/[^0-9]/', '', $this->lote->DataEmissao), 0, 8);
+        $tributacao = str_pad($this->lote->Tributacao, 2, " ");
+        $situacaoRPS = $this->lote->SituacaoRPS;
 
-        if ($this->std->TipoRecolhimento == 'A') {
+        if ($this->lote->TipoRecolhimento == 'A') {
             $tipoRec = 'N';
         } else {
             $tipoRec = 'S';
         }
 
-        $resultado = str_pad(str_replace('.', '', $this->std->ValorServicos - $this->std->Deducao), 15, "0", STR_PAD_LEFT);
-        $deducao = str_pad(preg_replace('/[^0-9]/', '', $this->std->Deducao), 15, "0", STR_PAD_LEFT);
-        $codigoCnae = str_pad($this->std->CodigoCnae, 10, "0", STR_PAD_LEFT);
-        $cnpj = str_pad($this->std->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
+        $resultado = str_pad(str_replace('.', '', $this->lote->ValorServicos - $this->lote->Deducao), 15, "0", STR_PAD_LEFT);
+        $deducao = str_pad(preg_replace('/[^0-9]/', '', $this->lote->Deducao), 15, "0", STR_PAD_LEFT);
+        $codigoCnae = str_pad($this->lote->CodigoCnae, 10, "0", STR_PAD_LEFT);
+        $cnpj = str_pad($this->lote->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
 
         $assinatura = $inscrMunicipal . $serie . $rpsNum . $dtEmi . $tributacao . $situacaoRPS . $tipoRec . $resultado . $deducao . $codigoCnae . $cnpj;
 
@@ -152,36 +230,15 @@ class Parser
         return $hash;
     }
 
-    protected function fixDates()
-    {
-
-        $this->std->DataInit = substr($this->std->DataEmissao, 0, 10);
-        $this->std->DataEnd = substr($this->std->DataEmissao, 0, 10);
-    }
-
-    protected function fixPhoneNumbers()
-    {
-        $this->std->tomador->DDDTomador = substr($this->std->tomador->Telefone, 0, 2);
-        $this->std->tomador->Telefone = substr($this->std->tomador->Telefone, 2);
-
-        if ($this->std->prestador->TelefonePrest) {
-
-            $this->std->prestador->DDDPrestador = substr($this->std->prestador->TelefonePrest, 0, 2);
-            $this->std->prestador->TelefonePrest = substr($this->std->prestador->TelefonePrest, 2);
-        }
-    }
-
     protected function getCodCidadeSIAFI($std)
     {
 
         if ($std->tomador->CodigoMunicipio == '3552205') {
             $codigoCidade = '7145';
             $this->std->SIAFI = '7145';
-
         } elseif ($std->tomador->CodigoMunicipio == '3170206') {
             $codigoCidade = '5403';
             $this->std->SIAFI = '5403';
-
         } elseif ($std->tomador->CodigoMunicipio == '3549409') {
             $codigoCidade = '7089';
             $this->std->SIAFI = '7089';

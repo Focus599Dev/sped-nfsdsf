@@ -17,8 +17,6 @@ class Tools extends ToolsBase
 
         $xml = Strings::clearXmlString($xml);
 
-        // $servico = 'enviar';
-
         $servico = 'enviar';
 
         if ($this->config->tpAmb == '2') {

@@ -19,7 +19,7 @@ class Convert
 
     public function toXml($txt = '')
     {
-        
+
         if (!empty($txt)) {
 
             $this->txt = trim($txt);
