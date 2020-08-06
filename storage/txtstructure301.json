@@ -3,7 +3,7 @@
     "A": "A|NumeroLote|3.0.1||MesCompetencia|AnoCompetencia|",
     "B": "B|Cnpj|InscricaoMunicipal|QuantidadeRps|",
     "C": "C|Cnpj|InscricaoMunicipal|RazaoSocial|TelefonePrest|",
-    "E": "E|RazaoSocial|Endereco|Contato|Telefone|Email|Numero|Complemento|Bairro|CodigoMunicipio|Uf|Cep|Prefixo|TipoBairro|DescMunicipio|DocTomadorEstrangeiro|",
+    "E": "E|RazaoSocial|Endereco|Contato|Telefone|Email|Numero|Complemento|Bairro|CodigoMunicipio|Uf|Cep|Prefixo|TipoBairro|DescMunicipio|DocTomadorEstrangeiro|CodigoSIAFITomador|",
     "E02": "E02|Cnpj|InscricaoMunicipal|RgIe|NomeFantasia|DentroPais|Local|UfFora|MunicipioFora|PaisFora|Situacao|",
     "E03": "E03|RazaoSocial|CpfCnpj|InscricaoMunicipal|",
     "F": "F|CodigoObra|Art|Obra|",

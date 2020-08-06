@@ -345,7 +345,7 @@ class Make
         $this->dom->addChild(
             $this->rps,
             "CidadeTomador",
-            $std->tomador->CodigoMunicipio,
+            $std->tomador->CodigoSIAFITomador,
             true,
             "Código da Cidade do Tomador padrão SIAFI"
         );
