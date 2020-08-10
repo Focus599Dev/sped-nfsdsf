@@ -3,7 +3,7 @@
 namespace NFePHP\NFSe\DSF\Soap;
 
 use NFePHP\Common\Exception\InvalidArgumentException;
-use NFePHP\Common\Exception\SoapException;
+use NFePHP\NFSe\GINFE\Exception\SoapException;
 
 class Soap
 {
