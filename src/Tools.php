@@ -29,11 +29,13 @@ class Tools extends ToolsBase
 
         $this->lastRequest = htmlspecialchars_decode($xml);
 
+        $cnpj = $this->getCNPJ($xml);
+
         $request = $this->envelopXML($xml, $servico);
 
         $request = $this->envelopSoapXML($request);
 
-        $response = $this->sendRequest($request, $this->soapUrl);
+        $response = $this->sendRequest($request, $this->soapUrl, $cnpj);
 
         $response = strip_tags($response);
 

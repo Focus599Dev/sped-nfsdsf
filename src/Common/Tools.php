@@ -23,24 +23,22 @@ class Tools
         ) . '/';
 
         $this->config = json_decode($configJson);
-        
+
         if ($this->config->municipio == '3552205') { #Sorocaba
 
             $this->soapUrl = 'http://www.issdigitalsod.com.br/WsNFe2/LoteRps.jws?wsdl';
-
         } elseif ($this->config->municipio == '3170206') { #Uberlândia
 
             $this->soapUrl = 'http://udigital.uberlandia.mg.gov.br/WsNFe2/LoteRps.jws?wsdl';
         }
-
     }
 
-    protected function sendRequest($request, $soapUrl)
+    protected function sendRequest($request, $soapUrl, $cnpj)
     {
 
         $soap = new Soap;
 
-        $response = $soap->send($request, $soapUrl);
+        $response = $soap->send($request, $soapUrl, $cnpj);
 
         return (string) $response;
     }
@@ -99,12 +97,19 @@ class Tools
         if ($std->nfml_cmun == '3552205') {
             $codigoCidade = '7145';
             $std->CodigoMunicipioPrest = '7145';
-
         } elseif ($std->nfml_cmun == '3170206') {
             $codigoCidade = '5403';
             $std->CodigoMunicipioPrest = '5403';
         }
 
         return $codigoCidade;
+    }
+
+    protected function getCNPJ($xml)
+    {
+
+        $xml = simplexml_load_string($xml);
+
+        return $cnpj = (string) $xml->Cabecalho->CPFCNPJRemetente;
     }
 }

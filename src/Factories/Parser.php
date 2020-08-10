@@ -3,6 +3,7 @@
 namespace NFePHP\NFSe\DSF\Factories;
 
 use NFePHP\NFSe\DSF\Make;
+use NFePHP\NFSe\DSF\Factories\CreateHash;
 use stdClass;
 use NFePHP\Common\Strings;
 use App\Http\Model\Uteis;
@@ -14,6 +15,8 @@ class Parser
     protected $structure;
 
     protected $make;
+
+    protected $hash;
 
     protected $loteRps;
 
@@ -45,6 +48,8 @@ class Parser
         $this->version = $version;
 
         $this->make = new Make();
+
+        $this->hash = new CreateHash();
     }
 
     public function toXml($nota)
@@ -198,52 +203,22 @@ class Parser
 
         $this->lote = (object) array_merge((array) $this->lote, (array) $std);
 
-        $this->lote->assinatura = $this->createSignature();
+        $hash = $this->hash->createSignature(
+            $this->lote->prestador->InscricaoMunicipal,
+            $this->lote->Serie,
+            $this->lote->RPSNum,
+            $this->lote->DataEmissao,
+            $this->lote->Tributacao,
+            $this->lote->SituacaoRPS,
+            $this->lote->TipoRecolhimento,
+            $this->lote->ValorServicos,
+            $this->lote->Deducao,
+            $this->lote->CodigoCnae,
+            $this->lote->tomador->Cnpj
+        );
+
+        $this->lote->assinatura = $hash;
 
         $this->make->buildLote($this->lote);
-    }
-
-    protected function createSignature()
-    {
-        $inscrMunicipal = str_pad($this->lote->prestador->InscricaoMunicipal, 11, "0", STR_PAD_LEFT);
-        $serie = str_pad($this->lote->Serie, 5, " ");
-        $rpsNum = str_pad($this->lote->RPSNum, 12, "0", STR_PAD_LEFT);
-        $dtEmi = substr(preg_replace('/[^0-9]/', '', $this->lote->DataEmissao), 0, 8);
-        $tributacao = str_pad($this->lote->Tributacao, 2, " ");
-        $situacaoRPS = $this->lote->SituacaoRPS;
-
-        if ($this->lote->TipoRecolhimento == 'A') {
-            $tipoRec = 'N';
-        } else {
-            $tipoRec = 'S';
-        }
-
-        $resultado = str_pad(str_replace('.', '', $this->lote->ValorServicos - $this->lote->Deducao), 15, "0", STR_PAD_LEFT);
-        $deducao = str_pad(preg_replace('/[^0-9]/', '', $this->lote->Deducao), 15, "0", STR_PAD_LEFT);
-        $codigoCnae = str_pad($this->lote->CodigoCnae, 10, "0", STR_PAD_LEFT);
-        $cnpj = str_pad($this->lote->tomador->Cnpj, 14, "0", STR_PAD_LEFT);
-
-        $assinatura = $inscrMunicipal . $serie . $rpsNum . $dtEmi . $tributacao . $situacaoRPS . $tipoRec . $resultado . $deducao . $codigoCnae . $cnpj;
-
-        $hash = sha1($assinatura);
-
-        return $hash;
-    }
-
-    protected function getCodCidadeSIAFI($std)
-    {
-
-        if ($std->tomador->CodigoMunicipio == '3552205') {
-            $codigoCidade = '7145';
-            $this->std->SIAFI = '7145';
-        } elseif ($std->tomador->CodigoMunicipio == '3170206') {
-            $codigoCidade = '5403';
-            $this->std->SIAFI = '5403';
-        } elseif ($std->tomador->CodigoMunicipio == '3549409') {
-            $codigoCidade = '7089';
-            $this->std->SIAFI = '7089';
-        }
-
-        return $codigoCidade;
     }
 }
