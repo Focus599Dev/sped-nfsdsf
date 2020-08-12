@@ -125,6 +125,8 @@ class Parser
     {
         $this->loteRps = (object) array_merge((array) $this->loteRps, (array) $std);
 
+        $this->make->buildLoteNum($this->loteRps);
+
         $this->lote = (object) array_merge((array) $this->lote, (array) $std);
     }
 

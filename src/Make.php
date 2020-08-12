@@ -24,10 +24,8 @@ class Make
         $this->cabecalho = $this->dom->createElement('Cabecalho');
 
         $this->lote = $this->dom->createElement('Lote');
-        $this->lote->setAttribute('Id', 'lote:1ABCDZ');
 
         $this->rps = $this->dom->createElement('RPS');
-        $this->rps->setAttribute('Id', 'rps:1');
 
         $this->itens = $this->dom->createElement('Itens');
     }
@@ -62,6 +60,12 @@ class Make
         $this->xml = $this->dom->saveXML();
 
         return $this->xml;
+    }
+
+    public function buildLoteNum($std)
+    {
+
+        $this->lote->setAttribute('Id', 'lote:' . $std->NumeroLote);
     }
 
     public function buildCabec($std)
@@ -158,6 +162,9 @@ class Make
 
     public function buildLote($std)
     {
+
+        $this->rps->setAttribute('Id', 'rps:' . $std->RPSNum);
+
         $this->dom->addChild(
             $this->rps,
             "Assinatura",
