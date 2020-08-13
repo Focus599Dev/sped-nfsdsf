@@ -691,7 +691,7 @@ class Make
         );
 
         $lote = $this->dom->createElement('Lote');
-        $lote->setAttribute('Id', 'lote:1ABCDZ');
+        $lote->setAttribute('Id', 'lote:' . $std->rps);
         $req->appendChild($lote);
 
         $nota = $this->dom->createElement('Nota');
@@ -699,7 +699,7 @@ class Make
         $lote->appendChild($nota);
 
         $this->dom->addChild(
-            $lote,
+            $nota,
             "InscricaoMunicipalPrestador",
             $std->InscricaoMunicipal,
             true,
@@ -707,7 +707,7 @@ class Make
         );
 
         $this->dom->addChild(
-            $lote,
+            $nota,
             "NumeroNota",
             $std->Numero,
             true,
@@ -715,7 +715,7 @@ class Make
         );
 
         $this->dom->addChild(
-            $lote,
+            $nota,
             "CodigoVerificacao",
             $std->CodigoCancelamento,
             true,
@@ -723,7 +723,7 @@ class Make
         );
 
         $this->dom->addChild(
-            $lote,
+            $nota,
             "MotivoCancelamento",
             $std->observacao,
             true,
@@ -735,7 +735,7 @@ class Make
         return $this->xml;
     }
 
-    public function consulta($std, $codigoCidade)
+    public function consulta($nfml_cnpj_emit, $codigoCidade, $nfml_rps)
     {
         $req = $this->dom->createElement('ns1:ReqConsultaLote');
         $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
@@ -757,7 +757,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CPFCNPJRemetente",
-            $std->nfml_cnpj_emit,
+            $nfml_cnpj_emit,
             true,
             "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
@@ -773,7 +773,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "NumeroLote",
-            $std->nfml_rps,
+            $nfml_rps,
             true,
             "Numero do lote a ser consultado"
         );

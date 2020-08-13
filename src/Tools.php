@@ -59,23 +59,25 @@ class Tools extends ToolsBase
 
         $request = $this->envelopSoapXML($request);
 
-        $response = $this->sendRequest($request, $this->soapUrl);
+        $cnpj = $std->cnpj;
+
+        $response = $this->sendRequest($request, $this->soapUrl, $cnpj);
 
         $response = strip_tags($response);
 
         $response = htmlspecialchars_decode($response);
 
+        $response = simplexml_load_string($response);
+
         return $response;
     }
 
-    public function consultaSituacaoLoteRPS($std)
+    public function consultaSituacaoLoteRPS($codigoCidade, $nfml_cnpj_emit, $nfml_rps)
     {
 
         $make = new Make();
 
-        $codigoCidade = $this->getCodCidadeSIAFI($std);
-
-        $xml = $make->consulta($std, $codigoCidade);
+        $xml = $make->consulta($nfml_cnpj_emit, $codigoCidade, ltrim(substr($nfml_rps, 5)));
 
         $xml = Strings::clearXmlString($xml);
 
@@ -85,11 +87,15 @@ class Tools extends ToolsBase
 
         $request = $this->envelopSoapXML($request);
 
-        $response = $this->sendRequest($request, $this->soapUrl);
+        $cnpj = $this->getCNPJ($xml);
+
+        $response = $this->sendRequest($request, $this->soapUrl, $cnpj);
 
         $response = strip_tags($response);
 
         $response = htmlspecialchars_decode($response);
+
+        $response = simplexml_load_string($response);
 
         return $response;
     }
