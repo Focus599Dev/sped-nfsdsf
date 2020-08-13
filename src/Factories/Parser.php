@@ -207,7 +207,7 @@ class Parser
 
         $hash = $this->hash->createSignature(
             $this->lote->prestador->InscricaoMunicipal,
-            $this->lote->Serie,
+            $this->lote->SerieDoRps,
             $this->lote->RPSNum,
             $this->lote->DataEmissao,
             $this->lote->Tributacao,
