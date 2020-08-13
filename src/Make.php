@@ -200,7 +200,7 @@ class Make
         $this->dom->addChild(
             $this->rps,
             "SerieRPS",
-            $std->Serie,
+            $std->SerieDoRps,
             true,
             "Série do RPS - Padrão “NF”"
         );
@@ -264,7 +264,7 @@ class Make
         $this->dom->addChild(
             $this->rps,
             "SeriePrestacao",
-            '99',
+            $std->Serie,
             true,
             "Número do equipamento emissor do RPS ou série de prestação."
         );

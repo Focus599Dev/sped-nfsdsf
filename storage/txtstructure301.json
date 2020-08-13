@@ -8,7 +8,7 @@
     "E03": "E03|RazaoSocial|CpfCnpj|InscricaoMunicipal|",
     "F": "F|CodigoObra|Art|Obra|",
     "H": "H|RPSNum|SituacaoRPS|",
-    "H01": "H01|Numero|Serie|Tipo|",
+    "H01": "H01|Numero|Serie|Tipo|SerieDoRps|",
     "I02": "I02|Numero|Serie|Tipo|",
     "M": "M|ValorServicos|ValorDeducoes|ValorPis|ValorCofins|ValorInss|ValorIr|ValorCsll|IssRetido|ValorIss|ValorIssRetido|ValorOutrasRetencoes|BaseCalculo|Aliquota|ValorLiquidoNfse|DescontoIncondicionado|AliquotaAtributos|DescontoCondicionado|Deducao|Imposto|Observacao|DataVencimento|ContraApresentacao|AliquotaCSLL|AliquotaIR|AliquotaINSS|AliquotaCOFINS|AliquotaPIS|Tributacao|Operacao|DescMunicipioPrest|CodigoMunicipioPrest|TipoRecolhimento|NumeroNFSeSubstituida|NumeroRPSSubstituido|SerieRPSSubstituido|",
     "N": "N|ItemListaServico|CodigoCnae|CodigoTributacaoMunicipio|Discriminacao|CodigoMunicipio|ValorIcms|ValorIpi|ValorIof|ValorCide|ValorOutrosTributos|Codigo|ValorUnit|Quantidade|Desconto|Tributavel|",
