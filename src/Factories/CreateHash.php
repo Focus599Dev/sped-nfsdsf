@@ -19,8 +19,7 @@ class CreateHash
         } else {
             $tipoRec = 'S';
         }
-
-        $resultado = str_pad(str_replace('.', '', $valorServicos - $valorDeducao), 15, "0", STR_PAD_LEFT);
+        $resultado = str_pad(str_replace('.', '', number_format($valorServicos - $valorDeducao, 2)), 15, "0", STR_PAD_LEFT);
         $deducao = str_pad(preg_replace('/[^0-9]/', '', $valorDeducao), 15, "0", STR_PAD_LEFT);
         $codigoCnae = str_pad($codigoCnae, 10, "0", STR_PAD_LEFT);
         $cnpj = str_pad($cnpj, 14, "0", STR_PAD_LEFT);
