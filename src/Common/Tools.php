@@ -4,6 +4,8 @@ namespace NFePHP\NFSe\DSF\Common;
 
 use NFePHP\NFSe\DSF\Soap\Soap;
 use NFePHP\Common\Validator;
+use NFePHP\NFSe\DSF\Make;
+use NFePHP\NFSe\DSF\Factories\CreateHash;
 
 class Tools
 {
@@ -110,6 +112,74 @@ class Tools
 
         $xml = simplexml_load_string($xml);
 
-        return $cnpj = (string) $xml->Cabecalho->CPFCNPJRemetente;
+        return (string) $xml->Cabecalho->CPFCNPJRemetente;
+    }
+
+    protected function getRps($xml)
+    {
+
+        $make = new Make();
+
+        $std = simplexml_load_string($xml);
+
+        $cnpj = $this->getCNPJ($xml);
+
+        $xml = $make->consultarRps($std);
+
+        $servico = 'consultarSequencialRps';
+
+        $request = $this->envelopXML($xml, $servico);
+
+        $request = $this->envelopSoapXML($request);
+
+        $response = $this->sendRequest($request, $this->soapUrl, $cnpj);
+
+        $response = strip_tags($response);
+
+        $response = htmlspecialchars_decode($response);
+
+        $std = simplexml_load_string($response);
+
+        $rps = (int) $std->Cabecalho->NroUltimoRps;
+
+        $rps = $rps + 1;
+
+        return (string) $rps;
+    }
+
+    public function recreateHash($xml, $rps)
+    {
+        $hash = new CreateHash();
+
+        $std = simplexml_load_string($xml);
+
+        $hash = $hash->createSignature(
+            $std->Lote->RPS->InscricaoMunicipalPrestador,
+            $std->Lote->RPS->SerieRPS,
+            $rps,
+            $std->Lote->RPS->DataEmissaoRPS,
+            $std->Lote->RPS->Tributacao,
+            $std->Lote->RPS->SituacaoRPS,
+            $std->Lote->RPS->TipoRecolhimento,
+            $std->Cabecalho->ValorTotalServicos,
+            $std->Cabecalho->ValorTotalDeducoes,
+            $std->Lote->RPS->CodigoAtividade,
+            $std->Lote->RPS->CPFCNPJTomador
+        );
+
+        return $hash;
+    }
+
+    public function subsInXml($xml, $rps, $hash)
+    {
+        $std = simplexml_load_string($xml);
+
+        $std->Lote->RPS->NumeroRPS = $rps;
+
+        $std->Lote->RPS->Assinatura = $hash;
+
+        $xml = $std->asXML();
+
+        return $xml;
     }
 }

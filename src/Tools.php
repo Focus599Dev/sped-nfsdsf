@@ -4,7 +4,6 @@ namespace NFePHP\NFSe\DSF;
 
 use NFePHP\NFSe\DSF\Common\Tools as ToolsBase;
 use NFePHP\Common\Strings;
-use NFePHP\NFSe\DSF\Make;
 
 class Tools extends ToolsBase
 {
@@ -20,7 +19,14 @@ class Tools extends ToolsBase
         $servico = 'enviar';
 
         if ($this->config->tpAmb == '2') {
+
             $servico = 'testeEnviar';
+
+            $rps = $this->getRps($xml);
+
+            $hash = $this->recreateHash($xml, $rps);
+
+            $xml = $this->subsInXml($xml, $rps, $hash);
         }
 
         $xsd = 'ReqEnvioLoteRPS.xsd';

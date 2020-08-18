@@ -782,4 +782,60 @@ class Make
 
         return $this->xml;
     }
+
+    public function consultarRps($std)
+    {
+        $req = $this->dom->createElement('ns1:ConsultaSeqRps');
+        $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
+        $req->setAttribute('xsi:schemaLocation', 'http://localhost:8080/WsNFe2/lote http://localhost:8080/WsNFe2/xsd/ConsultaSeqRps.xsd');
+        $req->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $this->dom->appendChild($req);
+
+        $cabecalho = $this->dom->createElement('Cabecalho');
+        $req->appendChild($cabecalho);
+
+        $this->dom->addChild(
+            $cabecalho,
+            "CodCid",
+            $std->Cabecalho->CodCidade,
+            true,
+            "Código da Cidade padrão SIAFI"
+        );
+
+        $this->dom->addChild(
+            $cabecalho,
+            "IMPrestador",
+            $std->Lote->RPS->InscricaoMunicipalPrestador,
+            true,
+            "Inscrição Municipal do Prestador."
+        );
+
+        $this->dom->addChild(
+            $cabecalho,
+            "CPFCNPJRemetente",
+            $std->Cabecalho->CPFCNPJRemetente,
+            true,
+            "CPF ou CNPJ do remetente"
+        );
+
+        $this->dom->addChild(
+            $cabecalho,
+            "SeriePrestacao",
+            $std->Lote->RPS->SeriePrestacao,
+            true,
+            "Número do equipamento emissor do RPS ou série de prestação."
+        );
+
+        $this->dom->addChild(
+            $cabecalho,
+            "Versao",
+            '1',
+            true,
+            "Versão do SChema XML. Padrão “1”"
+        );
+
+        $this->xml = $this->dom->saveXML();
+
+        return $this->xml;
+    }
 }
