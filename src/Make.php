@@ -630,7 +630,7 @@ class Make
         $this->dom->addChild(
             $item,
             "ValorTotal",
-            number_format($std->ValorUnit, 2),
+            number_format($std->ValorTotal, 2),
             true,
             "Valor total do serviço"
         );

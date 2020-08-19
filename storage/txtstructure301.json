@@ -11,7 +11,7 @@
     "H01": "H01|Numero|Serie|Tipo|SerieDoRps|",
     "I02": "I02|Numero|Serie|Tipo|",
     "M": "M|ValorServicos|ValorDeducoes|ValorPis|ValorCofins|ValorInss|ValorIr|ValorCsll|IssRetido|ValorIss|ValorIssRetido|ValorOutrasRetencoes|BaseCalculo|Aliquota|ValorLiquidoNfse|DescontoIncondicionado|AliquotaAtributos|DescontoCondicionado|Deducao|Imposto|Observacao|DataVencimento|ContraApresentacao|AliquotaCSLL|AliquotaIR|AliquotaINSS|AliquotaCOFINS|AliquotaPIS|Tributacao|Operacao|DescMunicipioPrest|CodigoMunicipioPrest|TipoRecolhimento|NumeroNFSeSubstituida|NumeroRPSSubstituido|SerieRPSSubstituido|",
-    "N": "N|ItemListaServico|CodigoCnae|CodigoTributacaoMunicipio|Discriminacao|CodigoMunicipio|ValorIcms|ValorIpi|ValorIof|ValorCide|ValorOutrosTributos|Codigo|ValorUnit|Quantidade|Desconto|Tributavel|",
+    "N": "N|ItemListaServico|CodigoCnae|CodigoTributacaoMunicipio|Discriminacao|CodigoMunicipio|ValorIcms|ValorIpi|ValorIof|ValorCide|ValorOutrosTributos|Codigo|ValorUnit|Quantidade|Desconto|Tributavel|ValorTotal|",
     "N01": "N01|MatDescricao|MatValorUnit|MatQuantidade|MatNota|MatCpfCnpj|DeduMateriais|",
     "W": "W|DataEmissao|NaturezaOperacao|RegimeEspecialTributacao|OptanteSimplesNacional|IncentivadorCultural|Status|"
 }
