@@ -735,7 +735,7 @@ class Make
         return $this->xml;
     }
 
-    public function consulta($nfml_cnpj_emit, $codigoCidade, $nfml_rps)
+    public function consulta($CodCidade, $CPFCNPJRemetente, $Lote)
     {
         $req = $this->dom->createElement('ns1:ReqConsultaLote');
         $req->setAttribute('xmlns:ns1', 'http://localhost:8080/WsNFe2/lote');
@@ -749,7 +749,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CodCidade",
-            $codigoCidade,
+            $CodCidade,
             true,
             "Código da cidade da declaração padrão SIAFI."
         );
@@ -757,7 +757,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "CPFCNPJRemetente",
-            $nfml_cnpj_emit,
+            $CPFCNPJRemetente,
             true,
             "CPF /CNPJ do remetente autorizado a transmitir o RPS"
         );
@@ -773,7 +773,7 @@ class Make
         $this->dom->addChild(
             $cabecalho,
             "NumeroLote",
-            $nfml_rps,
+            $Lote,
             true,
             "Numero do lote a ser consultado"
         );

@@ -78,12 +78,14 @@ class Tools extends ToolsBase
         return $response;
     }
 
-    public function consultaSituacaoLoteRPS($codigoCidade, $nfml_cnpj_emit, $nfml_rps)
+    public function consultaSituacaoLoteRPS($CodCidade, $CPFCNPJRemetente, $Lote)
     {
 
         $make = new Make();
 
-        $xml = $make->consulta($nfml_cnpj_emit, $codigoCidade, ltrim(substr($nfml_rps, 5)));
+        $Lote = preg_replace('/[^0-9]/', '', $Lote);
+
+        $xml = $make->consulta($CodCidade, $CPFCNPJRemetente, $Lote);
 
         $xml = Strings::clearXmlString($xml);
 
@@ -93,15 +95,11 @@ class Tools extends ToolsBase
 
         $request = $this->envelopSoapXML($request);
 
-        $cnpj = $this->getCNPJ($xml);
-
-        $response = $this->sendRequest($request, $this->soapUrl, $cnpj);
+        $response = $this->sendRequest($request, $this->soapUrl, $CPFCNPJRemetente);
 
         $response = strip_tags($response);
 
         $response = htmlspecialchars_decode($response);
-
-        $response = simplexml_load_string($response);
 
         return $response;
     }
